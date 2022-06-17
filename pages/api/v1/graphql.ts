@@ -35,6 +35,15 @@ builder.prismaObject('ShoppingListItem', {
   }),
 });
 
+builder.queryType({
+  fields: (t) => ({
+    shoppingList: t.prismaField({
+      type: ['ShoppingListItem'],
+      resolve: () => prisma.shoppingListItem.findMany()
+    })
+  })
+})
+
 const server = createServer<{
   req: NextApiRequest
   res: NextApiResponse
