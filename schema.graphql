@@ -1,0 +1,8 @@
+type Query {
+  shoppingList: [ShoppingListItem!]!
+}
+
+type ShoppingListItem {
+  id: ID!
+  title: String!
+}
