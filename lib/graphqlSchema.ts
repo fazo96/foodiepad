@@ -2,14 +2,14 @@ import SchemaBuilder from '@pothos/core'
 import PrismaPlugin from '@pothos/plugin-prisma'
 import RelayPlugin from '@pothos/plugin-relay'
 import { PrismaClient } from '@prisma/client'
-import { printSchema, lexicographicSortSchema } from 'graphql'
-import path from 'path'
 
 // This is the default location for the generator, but this can be
 // customized as described above.
 // Using a type only import will help avoid issues with undeclared
 // exports in esm mode
 import type PrismaTypes from '@pothos/plugin-prisma/generated'
+import {lexicographicSortSchema, printSchema} from "graphql";
+import {writeFileSync} from "fs";
 
 export function buildSchema() {
   const prisma = new PrismaClient({})
@@ -28,43 +28,50 @@ export function buildSchema() {
     },
   });
 
-  builder.prismaObject('ShoppingListItem', {
+  // Types
+  const ShoppingListItem = builder.prismaNode('ShoppingListItem', {
+    id: { field: 'id' },
     fields: (t) => ({
-      id: t.exposeID('id'),
       title: t.exposeString('title'),
     }),
   });
 
+  // Query Type
   builder.queryType({
     fields: (t) => ({
-      shoppingList: t.prismaField({
-        type: ['ShoppingListItem'],
+      shoppingList: t.prismaConnection({
+        type: ShoppingListItem,
+        cursor: 'id',
         resolve: () => prisma.shoppingListItem.findMany()
       })
     })
   })
-  
-  return builder.toSchema({})
-}
 
-export async function writeSchemaToFile() {
-  if (typeof window !== typeof undefined) return
-
-  const schema = buildSchema()
-  const schemaAsString = printSchema(lexicographicSortSchema(schema));
-  const fs = await import('fs')
-
-  await new Promise<void>((resolve, reject) => {
-    fs.writeFile(path.join(__dirname, '../schema.graphql'), schemaAsString, (err) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
-      }
+  // Mutations
+  const ShoppingListItemInput = builder.inputType('ShoppingListItemInput', {
+    fields: (t) => ({
+      title: t.string({ required: true })
     })
   })
 
-  console.log('Updated schema.graphql')
+  builder.mutationType({
+    fields: (t) => ({
+      createShoppingListItem: t.prismaField({
+        type: ShoppingListItem,
+        args: {
+          input: t.arg({ type: ShoppingListItemInput, required: true })
+        },
+        async resolve(root, args, variables) {
+          const item = await prisma.shoppingListItem.create({
+            data: {
+              title: variables.input.title
+            }
+          })
+          return item
+        }
+      })
+    })
+  })
 
-  return schemaAsString
+  return builder.toSchema({})
 }

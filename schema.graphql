@@ -1,8 +1,39 @@
-type Query {
-  shoppingList: [ShoppingListItem!]!
+type Mutation {
+  createShoppingListItem(input: ShoppingListItemInput!): ShoppingListItem!
 }
 
-type ShoppingListItem {
+interface Node {
   id: ID!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+type Query {
+  node(id: ID!): Node
+  nodes(ids: [ID!]!): [Node]!
+  shoppingList(after: String, before: String, first: Int, last: Int): QueryShoppingListConnection!
+}
+
+type QueryShoppingListConnection {
+  edges: [QueryShoppingListConnectionEdge]!
+  pageInfo: PageInfo!
+}
+
+type QueryShoppingListConnectionEdge {
+  cursor: String!
+  node: ShoppingListItem!
+}
+
+type ShoppingListItem implements Node {
+  id: ID!
+  title: String!
+}
+
+input ShoppingListItemInput {
   title: String!
 }
