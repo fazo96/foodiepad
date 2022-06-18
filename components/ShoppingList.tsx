@@ -2,7 +2,15 @@ import {graphql, useLazyLoadQuery, useMutation} from "react-relay";
 import {Fragment, useCallback} from "react";
 import {ShoppingList_AddMutation} from "../__generated__/ShoppingList_AddMutation.graphql";
 import {ShoppingList_Query} from "../__generated__/ShoppingList_Query.graphql";
-import {Button, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText} from "@mui/material";
+import {
+    Button,
+    IconButton,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemSecondaryAction,
+    ListItemText
+} from "@mui/material";
 import ClearAll from "@mui/icons-material/ClearAll";
 import CheckBoxOutlineBlank from "@mui/icons-material/CheckBoxOutlineBlank";
 
@@ -67,6 +75,7 @@ export default function ShoppingList() {
                 )
             ))}
         </List>
+
         <Button onClick={add}>Add</Button>
     </Fragment>
 }
