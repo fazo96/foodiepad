@@ -1,6 +1,6 @@
 import SchemaBuilder from '@pothos/core'
 import PrismaPlugin from '@pothos/plugin-prisma'
-import RelayPlugin from '@pothos/plugin-relay'
+import RelayPlugin, {encodeGlobalID} from '@pothos/plugin-relay'
 import { PrismaClient } from '@prisma/client'
 
 // This is the default location for the generator, but this can be
@@ -48,30 +48,36 @@ export function buildSchema() {
   })
 
   // Mutations
-  const ShoppingListItemInput = builder.inputType('ShoppingListItemInput', {
-    fields: (t) => ({
-      title: t.string({ required: true })
-    })
-  })
 
   builder.mutationType({
-    fields: (t) => ({
-      createShoppingListItem: t.prismaField({
-        type: ShoppingListItem,
-        args: {
-          input: t.arg({ type: ShoppingListItemInput, required: true })
-        },
-        async resolve(root, args, variables) {
-          const item = await prisma.shoppingListItem.create({
+    fields: (t) => ({})
+  })
+
+  const createShoppingListItem = builder.relayMutationField(
+      'createShoppingListItem',
+      {
+    inputFields: (t) => ({
+      title: t.string({required: true})
+    })}, {
+        async resolve(root, args) {
+          const shoppingListItem = await prisma.shoppingListItem.create({
             data: {
-              title: variables.input.title
+              title: args.input.title
             }
           })
-          return item
+          return {
+            shoppingListItem
+          }
         }
-      })
-    })
-  })
+      },
+      {
+        outputFields: (t) => ({
+          shoppingListItem: t.node({
+            id: (value) => encodeGlobalID(ShoppingListItem.name, value.shoppingListItem.id)
+          })
+        })
+      }
+  )
 
   return builder.toSchema({})
 }

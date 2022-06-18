@@ -13,7 +13,11 @@
     "relay": "relay-compiler"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
     "@graphql-yoga/node": "^2.9.2",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.8.4",
     "@pothos/core": "^3.12.0",
     "@pothos/plugin-prisma": "^3.10.0",
     "@pothos/plugin-relay": "^3.12.1",

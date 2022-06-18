@@ -1,5 +1,13 @@
+input CreateShoppingListItemInput {
+  title: String!
+}
+
+type CreateShoppingListItemPayload {
+  shoppingListItem: Node
+}
+
 type Mutation {
-  createShoppingListItem(input: ShoppingListItemInput!): ShoppingListItem!
+  createShoppingListItem(input: CreateShoppingListItemInput!): CreateShoppingListItemPayload!
 }
 
 interface Node {
@@ -31,9 +39,5 @@ type QueryShoppingListConnectionEdge {
 
 type ShoppingListItem implements Node {
   id: ID!
-  title: String!
-}
-
-input ShoppingListItemInput {
   title: String!
 }

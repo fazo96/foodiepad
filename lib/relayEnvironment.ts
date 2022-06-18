@@ -36,6 +36,6 @@ async function fetchRelay(params: RequestParameters, variables: Variables): Prom
 
 // Export a singleton instance of Relay Environment configured with our network function:
 export const relayEnvironment = new Environment({
-        network: Network.create(fetchRelay),
-        store: new Store(new RecordSource()),
-    })
+  network: Network.create(fetchRelay),
+  store: new Store(new RecordSource()),
+})
