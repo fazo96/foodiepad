@@ -30,9 +30,7 @@ export default function ShoppingList() {
         createShoppingListItem(input: $input) {
           shoppingListItem @prependNode(connections: $connectionIds, edgeTypeName: "QueryShoppingListConnectionEdge") {
             id
-            ... on ShoppingListItem {
-              title
-            }
+            title
           }
         }
       }

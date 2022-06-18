@@ -72,8 +72,8 @@ export function buildSchema() {
       },
       {
         outputFields: (t) => ({
-          shoppingListItem: t.node({
-            id: (value) => encodeGlobalID(ShoppingListItem.name, value.shoppingListItem.id)
+          shoppingListItem: t.expose('shoppingListItem', {
+            type: ShoppingListItem
           })
         })
       }

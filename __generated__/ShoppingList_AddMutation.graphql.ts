@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a72a0741e948dc3acbf6a544de44926e>>
+ * @generated SignedSource<<0451e377982553fc1ef1e967b39ebf60>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,8 +20,8 @@ export type ShoppingList_AddMutation$data = {
   readonly createShoppingListItem: {
     readonly shoppingListItem: {
       readonly id: string;
-      readonly title?: string;
-    } | null;
+      readonly title: string;
+    };
   };
 };
 export type ShoppingList_AddMutation = {
@@ -50,13 +50,18 @@ v2 = [
 v3 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v4 = {
-  "kind": "InlineFragment",
+  "concreteType": "ShoppingListItem",
+  "kind": "LinkedField",
+  "name": "shoppingListItem",
+  "plural": false,
   "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": null,
@@ -65,8 +70,7 @@ v4 = {
       "storageKey": null
     }
   ],
-  "type": "ShoppingListItem",
-  "abstractKey": null
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -86,19 +90,7 @@ return {
         "name": "createShoppingListItem",
         "plural": false,
         "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": null,
-            "kind": "LinkedField",
-            "name": "shoppingListItem",
-            "plural": false,
-            "selections": [
-              (v3/*: any*/),
-              (v4/*: any*/)
-            ],
-            "storageKey": null
-          }
+          (v3/*: any*/)
         ],
         "storageKey": null
       }
@@ -123,26 +115,7 @@ return {
         "name": "createShoppingListItem",
         "plural": false,
         "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": null,
-            "kind": "LinkedField",
-            "name": "shoppingListItem",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "__typename",
-                "storageKey": null
-              },
-              (v3/*: any*/),
-              (v4/*: any*/)
-            ],
-            "storageKey": null
-          },
+          (v3/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -170,16 +143,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "97f538a1d428c9809292728cdce1ea1c",
+    "cacheID": "98fd7688452719c416aa8c9163182b23",
     "id": null,
     "metadata": {},
     "name": "ShoppingList_AddMutation",
     "operationKind": "mutation",
-    "text": "mutation ShoppingList_AddMutation(\n  $input: CreateShoppingListItemInput!\n) {\n  createShoppingListItem(input: $input) {\n    shoppingListItem {\n      __typename\n      id\n      ... on ShoppingListItem {\n        title\n      }\n    }\n  }\n}\n"
+    "text": "mutation ShoppingList_AddMutation(\n  $input: CreateShoppingListItemInput!\n) {\n  createShoppingListItem(input: $input) {\n    shoppingListItem {\n      id\n      title\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b7442274c1e0244bd4711858acd5638f";
+(node as any).hash = "374a191af3c19167ea953556b1466923";
 
 export default node;

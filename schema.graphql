@@ -3,7 +3,7 @@ input CreateShoppingListItemInput {
 }
 
 type CreateShoppingListItemPayload {
-  shoppingListItem: Node
+  shoppingListItem: ShoppingListItem!
 }
 
 type Mutation {
