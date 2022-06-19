@@ -16,12 +16,10 @@ async function fetchGraphQL (text: string | null | undefined, variables: Variabl
   if (typeof window === typeof undefined) {
     const server = (await import('../pages/api/v1/graphql')).default
     const response = await (await server.fetch(apiUrl, init)).json()
-    console.log(response)
     return response
   } else {
     const url = `${location.origin}${apiUrl}`
     const response = await (await fetch(url, init)).json()
-    console.log(response)
     return response
   }
 }
@@ -29,7 +27,6 @@ async function fetchGraphQL (text: string | null | undefined, variables: Variabl
 // Relay passes a "params" object with the query name and text. So we define a helper function
 // to call our fetchGraphQL utility with params.text.
 async function fetchRelay (params: RequestParameters, variables: Variables): Promise<GraphQLResponse> {
-  console.log(`fetching query ${params.name} with ${JSON.stringify(variables)}`)
   // TODO: figure out typings here
   return fetchGraphQL(params.text, variables) as unknown as GraphQLResponse
 }

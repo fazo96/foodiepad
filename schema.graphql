@@ -6,8 +6,18 @@ type CreateShoppingListItemPayload {
   shoppingListItem: ShoppingListItem!
 }
 
+input DeleteShoppingListItemInput {
+  shoppingListItem: ID!
+}
+
+type DeleteShoppingListItemPayload {
+  shoppingListItem: ShoppingListItem!
+}
+
 type Mutation {
   createShoppingListItem(input: CreateShoppingListItemInput!): CreateShoppingListItemPayload!
+  deleteShoppingListItem(input: DeleteShoppingListItemInput!): DeleteShoppingListItemPayload!
+  updateShoppingListItem(input: UpdateShoppingListItemInput!): UpdateShoppingListItemPayload!
 }
 
 interface Node {
@@ -38,6 +48,17 @@ type QueryShoppingListConnectionEdge {
 }
 
 type ShoppingListItem implements Node {
+  completed: Boolean!
   id: ID!
   title: String!
+}
+
+input UpdateShoppingListItemInput {
+  completed: Boolean
+  shoppingListItem: ID!
+  title: String
+}
+
+type UpdateShoppingListItemPayload {
+  shoppingListItem: ShoppingListItem!
 }

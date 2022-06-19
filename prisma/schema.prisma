@@ -17,4 +17,5 @@ datasource db {
 model ShoppingListItem {
   id Int @id @default(autoincrement())
   title String @db.VarChar(255)
+  completed Boolean @default(false)
 }

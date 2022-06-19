@@ -1,5 +1,5 @@
 import { lexicographicSortSchema, printSchema } from 'graphql'
-import { buildSchema } from './graphqlSchema'
+import { buildSchema } from './builder'
 import { writeFileSync } from 'fs'
 
 export function writeSchemaToFile () {
@@ -9,8 +9,6 @@ export function writeSchemaToFile () {
   const schemaAsString = printSchema(lexicographicSortSchema(schema))
 
   writeFileSync('schema.graphql', schemaAsString)
-
-  console.log('Updated schema.graphql')
 
   return schemaAsString
 }
