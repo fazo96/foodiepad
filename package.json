@@ -9,7 +9,6 @@
     "start": "next start",
     "lint": "eslint components lib pages",
     "lint-fix": "eslint --fix components lib pages",
-    "prisma-migrate-init": "npx prisma migrate dev --name init",
     "prisma-migrate": "npx prisma migrate dev",
     "prisma-generate": "npx prisma generate",
     "relay": "relay-compiler",
