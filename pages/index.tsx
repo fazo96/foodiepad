@@ -1,5 +1,5 @@
-import ShoppingList from "../components/ShoppingList";
+import ShoppingList from '../components/ShoppingList'
 
-export default function Index() {
+export default function Index () {
   return <ShoppingList />
 }
