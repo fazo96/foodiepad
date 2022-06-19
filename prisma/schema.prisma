@@ -10,12 +10,12 @@ generator pothos {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:/tmp/foodiepad.db"
 }
 
 model ShoppingListItem {
   id Int @id @default(autoincrement())
-  title String @db.VarChar(255)
+  title String
   completed Boolean @default(false)
 }
