@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/fazo96/foodiepad/compare/v0.1.1...v0.1.2) (2022-08-10)
+
+
+### Bug Fixes
+
+* fixed code style issue causing build to break ([108176d](https://github.com/fazo96/foodiepad/commit/108176d3d5da29db14ced5a4d809ba4e5c6fa72f))
+
 ### [0.1.1](https://github.com/fazo96/foodiepad/compare/v0.1.0...v0.1.1) (2022-08-10)
 
 
