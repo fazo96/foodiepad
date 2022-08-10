@@ -48,7 +48,7 @@ export function buildSchema () {
           return prisma.shoppingListItem.findMany({
             orderBy: [
               { completed: 'asc' },
-              { completed_at: 'desc'},
+              { completed_at: 'desc' },
               { title: 'asc' }
             ],
             where: {
