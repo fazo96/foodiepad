@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/fazo96/foodiepad/compare/v0.1.0...v0.1.1) (2022-08-10)
+
+
+### Features
+
+* items are now ordered by title and completion time ([9a5d16d](https://github.com/fazo96/foodiepad/commit/9a5d16d1034c4276ef870534acae7981f994bb9a))
+
+
+### Bug Fixes
+
+* prevent accidental page zoom on mobile ([c161457](https://github.com/fazo96/foodiepad/commit/c161457b185efed1a6cc7c47d961a96fede4cda4))
+
 ## 0.1.0 (2022-06-19)
 
 
