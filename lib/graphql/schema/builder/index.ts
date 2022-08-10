@@ -38,7 +38,24 @@ export function buildSchema () {
       shoppingList: t.prismaConnection({
         type: ShoppingListItem,
         cursor: 'id',
-        resolve: () => prisma.shoppingListItem.findMany()
+        args: {
+          completed: t.arg({
+            type: 'Boolean',
+            required: false
+          })
+        },
+        resolve: (query, parent, args) => {
+          return prisma.shoppingListItem.findMany({
+            orderBy: [
+              { completed: 'asc' },
+              { completed_at: 'desc'},
+              { title: 'asc' }
+            ],
+            where: {
+              completed: typeof args.completed === 'boolean' ? args.completed : undefined
+            }
+          })
+        }
       })
     })
   })
@@ -94,7 +111,8 @@ export function buildSchema () {
           where: { id: parseInt(shoppingListItemReference.id, 10) },
           data: {
             title: args.input.title || undefined,
-            completed: args.input.completed ?? undefined
+            completed: args.input.completed ?? undefined,
+            completed_at: args.input.completed ? new Date() : undefined
           }
         })
         return {
