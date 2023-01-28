@@ -39,7 +39,7 @@ function ShoppingListContent ({ id }: { id: string }) {
     fetchPolicy: 'store-and-network',
     fetchKey
   })
-  const connectionId = data?.shoppingList?.__id
+  const connectionId = data?.shoppingList?.items?.__id
 
   return <>
     <List>

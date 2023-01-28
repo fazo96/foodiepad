@@ -10,7 +10,7 @@ import { ShoppingListItem_UpdateMutation } from '../__generated__/ShoppingListIt
 
 interface IShoppingListItemProps {
   shoppingListItemFragmentRef: ShoppingListItem_Item$key
-  connectionId: string
+  connectionId?: string
 }
 
 function ShoppingListItem ({ shoppingListItemFragmentRef, connectionId }: IShoppingListItemProps) {

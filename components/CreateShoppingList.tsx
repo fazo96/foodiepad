@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { graphql, useMutation } from 'react-relay'
 import { memo, useCallback } from 'react'
 import { IconButton, TextField } from '@mui/material'
-import {CheckCircle, List as ListIcon, PlusOne, Send} from '@mui/icons-material'
+import { Send } from '@mui/icons-material'
 import { CreateShoppingList_Mutation } from '../__generated__/CreateShoppingList_Mutation.graphql'
 
 interface ICreateShoppingListProps {
