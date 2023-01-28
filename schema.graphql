@@ -1,9 +1,22 @@
+input CreateShoppingListInput {
+  title: String!
+}
+
 input CreateShoppingListItemInput {
+  shoppingList: ID!
   title: String!
 }
 
 type CreateShoppingListItemPayload {
   shoppingListItem: ShoppingListItem!
+}
+
+type CreateShoppingListPayload {
+  shoppingList: ShoppingList!
+}
+
+input DeleteShoppingListInput {
+  shoppingList: ID!
 }
 
 input DeleteShoppingListItemInput {
@@ -14,9 +27,16 @@ type DeleteShoppingListItemPayload {
   shoppingListItem: ShoppingListItem!
 }
 
+type DeleteShoppingListPayload {
+  shoppingList: ShoppingList!
+}
+
 type Mutation {
+  createShoppingList(input: CreateShoppingListInput!): CreateShoppingListPayload!
   createShoppingListItem(input: CreateShoppingListItemInput!): CreateShoppingListItemPayload!
+  deleteShoppingList(input: DeleteShoppingListInput!): DeleteShoppingListPayload!
   deleteShoppingListItem(input: DeleteShoppingListItemInput!): DeleteShoppingListItemPayload!
+  updateShoppingList(input: UpdateShoppingListInput!): UpdateShoppingListPayload!
   updateShoppingListItem(input: UpdateShoppingListItemInput!): UpdateShoppingListItemPayload!
 }
 
@@ -34,23 +54,45 @@ type PageInfo {
 type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
-  shoppingList(after: String, before: String, first: Int, last: Int): QueryShoppingListConnection!
+  shoppingLists(after: String, before: String, first: Int, last: Int): QueryShoppingListsConnection!
 }
 
-type QueryShoppingListConnection {
-  edges: [QueryShoppingListConnectionEdge]!
+type QueryShoppingListsConnection {
+  edges: [QueryShoppingListsConnectionEdge]!
   pageInfo: PageInfo!
 }
 
-type QueryShoppingListConnectionEdge {
+type QueryShoppingListsConnectionEdge {
   cursor: String!
-  node: ShoppingListItem!
+  node: ShoppingList!
+}
+
+type ShoppingList implements Node {
+  id: ID!
+  items(after: String, before: String, completed: Boolean, first: Int, last: Int): ShoppingListItemsConnection!
+  title: String!
 }
 
 type ShoppingListItem implements Node {
   completed: Boolean!
   id: ID!
+  shoppingList: ShoppingList!
   title: String!
+}
+
+type ShoppingListItemsConnection {
+  edges: [ShoppingListItemsConnectionEdge]!
+  pageInfo: PageInfo!
+}
+
+type ShoppingListItemsConnectionEdge {
+  cursor: String!
+  node: ShoppingListItem!
+}
+
+input UpdateShoppingListInput {
+  shoppingList: ID!
+  title: String
 }
 
 input UpdateShoppingListItemInput {
@@ -61,4 +103,8 @@ input UpdateShoppingListItemInput {
 
 type UpdateShoppingListItemPayload {
   shoppingListItem: ShoppingListItem!
+}
+
+type UpdateShoppingListPayload {
+  shoppingListItem: ShoppingList!
 }

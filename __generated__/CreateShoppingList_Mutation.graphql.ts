@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<07ef7230b1f8eeb6847629c7273706ed>>
+ * @generated SignedSource<<82cf51f7092dbdd3badd4e70dd63ac08>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,25 +10,24 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type CreateShoppingListItemInput = {
-  shoppingList: string;
+export type CreateShoppingListInput = {
   title: string;
 };
-export type ShoppingListAddItem_Mutation$variables = {
+export type CreateShoppingList_Mutation$variables = {
   connectionIds: ReadonlyArray<string>;
-  input: CreateShoppingListItemInput;
+  input: CreateShoppingListInput;
 };
-export type ShoppingListAddItem_Mutation$data = {
-  readonly createShoppingListItem: {
-    readonly shoppingListItem: {
+export type CreateShoppingList_Mutation$data = {
+  readonly createShoppingList: {
+    readonly shoppingList: {
       readonly id: string;
-      readonly " $fragmentSpreads": FragmentRefs<"ShoppingListItem_Item">;
+      readonly " $fragmentSpreads": FragmentRefs<"ShoppingList_List">;
     };
   };
 };
-export type ShoppingListAddItem_Mutation = {
-  response: ShoppingListAddItem_Mutation$data;
-  variables: ShoppingListAddItem_Mutation$variables;
+export type CreateShoppingList_Mutation = {
+  response: CreateShoppingList_Mutation$data;
+  variables: CreateShoppingList_Mutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -64,29 +63,29 @@ return {
     ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "ShoppingListAddItem_Mutation",
+    "name": "CreateShoppingList_Mutation",
     "selections": [
       {
         "alias": null,
         "args": (v2/*: any*/),
-        "concreteType": "CreateShoppingListItemPayload",
+        "concreteType": "CreateShoppingListPayload",
         "kind": "LinkedField",
-        "name": "createShoppingListItem",
+        "name": "createShoppingList",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "ShoppingListItem",
+            "concreteType": "ShoppingList",
             "kind": "LinkedField",
-            "name": "shoppingListItem",
+            "name": "shoppingList",
             "plural": false,
             "selections": [
               (v3/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
-                "name": "ShoppingListItem_Item"
+                "name": "ShoppingList_List"
               }
             ],
             "storageKey": null
@@ -105,22 +104,22 @@ return {
       (v0/*: any*/)
     ],
     "kind": "Operation",
-    "name": "ShoppingListAddItem_Mutation",
+    "name": "CreateShoppingList_Mutation",
     "selections": [
       {
         "alias": null,
         "args": (v2/*: any*/),
-        "concreteType": "CreateShoppingListItemPayload",
+        "concreteType": "CreateShoppingListPayload",
         "kind": "LinkedField",
-        "name": "createShoppingListItem",
+        "name": "createShoppingList",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "ShoppingListItem",
+            "concreteType": "ShoppingList",
             "kind": "LinkedField",
-            "name": "shoppingListItem",
+            "name": "shoppingList",
             "plural": false,
             "selections": [
               (v3/*: any*/),
@@ -129,13 +128,6 @@ return {
                 "args": null,
                 "kind": "ScalarField",
                 "name": "title",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "completed",
                 "storageKey": null
               }
             ],
@@ -148,7 +140,7 @@ return {
             "handle": "prependNode",
             "key": "",
             "kind": "LinkedHandle",
-            "name": "shoppingListItem",
+            "name": "shoppingList",
             "handleArgs": [
               {
                 "kind": "Variable",
@@ -168,16 +160,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f973b134338253bedcb8ee35f75fb930",
+    "cacheID": "70fff9e4d99b2e88338dd984652d61ba",
     "id": null,
     "metadata": {},
-    "name": "ShoppingListAddItem_Mutation",
+    "name": "CreateShoppingList_Mutation",
     "operationKind": "mutation",
-    "text": "mutation ShoppingListAddItem_Mutation(\n  $input: CreateShoppingListItemInput!\n) {\n  createShoppingListItem(input: $input) {\n    shoppingListItem {\n      id\n      ...ShoppingListItem_Item\n    }\n  }\n}\n\nfragment ShoppingListItem_Item on ShoppingListItem {\n  id\n  title\n  completed\n}\n"
+    "text": "mutation CreateShoppingList_Mutation(\n  $input: CreateShoppingListInput!\n) {\n  createShoppingList(input: $input) {\n    shoppingList {\n      id\n      ...ShoppingList_List\n    }\n  }\n}\n\nfragment ShoppingList_List on ShoppingList {\n  id\n  title\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c2d94c5602fd698a89bc8c5e80c08968";
+(node as any).hash = "15881f11238e0f656a755a361cb9da4c";
 
 export default node;

@@ -24,28 +24,27 @@ export function buildSchema () {
   })
 
   // Types
+
   const ShoppingListItem = builder.prismaNode('ShoppingListItem', {
     ...prismaNodeRelayOptions('ShoppingListItem'),
     fields: (t) => ({
       title: t.exposeString('title'),
-      completed: t.exposeBoolean('completed')
+      completed: t.exposeBoolean('completed'),
+      shoppingList: t.relation('shopping_list')
     })
   })
 
-  // Query Type
-  builder.queryType({
+  const ShoppingList = builder.prismaNode('ShoppingList', {
+    ...prismaNodeRelayOptions('ShoppingList'),
     fields: (t) => ({
-      shoppingList: t.prismaConnection({
-        type: ShoppingListItem,
+      title: t.exposeString('title'),
+      items: t.relatedConnection('items', {
         cursor: 'id',
         args: {
-          completed: t.arg({
-            type: 'Boolean',
-            required: false
-          })
+          completed: t.arg.boolean()
         },
-        resolve: (query, parent, args) => {
-          return prisma.shoppingListItem.findMany({
+        query: (args, context) => {
+          return {
             orderBy: [
               { completed: 'asc' },
               { completed_at: 'desc' },
@@ -54,6 +53,23 @@ export function buildSchema () {
             where: {
               completed: typeof args.completed === 'boolean' ? args.completed : undefined
             }
+          }
+        }
+      })
+    })
+  })
+
+  // Query Type
+  builder.queryType({
+    fields: (t) => ({
+      shoppingLists: t.prismaConnection({
+        type: ShoppingList,
+        cursor: 'id',
+        resolve: (query, parent, args) => {
+          return prisma.shoppingList.findMany({
+            orderBy: [
+              { title: 'asc' }
+            ]
           })
         }
       })
@@ -67,15 +83,105 @@ export function buildSchema () {
   })
 
   builder.relayMutationField(
-    'createShoppingListItem',
+    'createShoppingList',
     {
       inputFields: (t) => ({
         title: t.string({ required: true })
       })
     }, {
       async resolve (root, args) {
+        const shoppingList = await prisma.shoppingList.create({
+          data: {
+            title: args.input.title
+          }
+        })
+        return {
+          shoppingList
+        }
+      }
+    },
+    {
+      outputFields: (t) => ({
+        shoppingList: t.expose('shoppingList', {
+          type: ShoppingList
+        })
+      })
+    }
+  )
+
+  builder.relayMutationField(
+    'updateShoppingList',
+    {
+      inputFields: (t) => ({
+        shoppingList: t.globalID({ required: true }),
+        title: t.string()
+      })
+    }, {
+      async resolve (root, args) {
+        const shoppingListReference = decodeGlobalID(args.input.shoppingList.id)
+        if (shoppingListReference.typename !== ShoppingList.name) {
+          throw new Error(`Invalid ${ShoppingList.name} ID`)
+        }
+        const shoppingList = await prisma.shoppingList.update({
+          where: { id: parseInt(shoppingListReference.id, 10) },
+          data: {
+            title: args.input.title || undefined
+          }
+        })
+        return {
+          shoppingList
+        }
+      }
+    }, {
+      outputFields: (t) => ({
+        shoppingListItem: t.expose('shoppingList', {
+          type: ShoppingList
+        })
+      })
+    }
+  )
+
+  builder.relayMutationField(
+    'deleteShoppingList',
+    {
+      inputFields: (t) => ({
+        shoppingList: t.globalID({ required: true })
+      })
+    }, {
+      async resolve (root, args) {
+        const { typename, id } = decodeGlobalID(args.input.shoppingList.id)
+        if (typename !== ShoppingList.name) {
+          throw new Error(`Invalid ${ShoppingList.name} ID`)
+        }
+        const shoppingList = await prisma.shoppingList.delete({
+          where: { id: parseInt(id, 10) }
+        })
+        return {
+          shoppingList
+        }
+      }
+    }, {
+      outputFields: (t) => ({
+        shoppingList: t.expose('shoppingList', {
+          type: ShoppingList
+        })
+      })
+    }
+  )
+
+  builder.relayMutationField(
+    'createShoppingListItem',
+    {
+      inputFields: (t) => ({
+        shoppingList: t.globalID({ required: true }),
+        title: t.string({ required: true })
+      })
+    }, {
+      async resolve (root, args) {
+        const shoppingListReference = decodeGlobalID(args.input.shoppingList.id)
         const shoppingListItem = await prisma.shoppingListItem.create({
           data: {
+            shopping_list_id: parseInt(shoppingListReference.id, 10),
             title: args.input.title
           }
         })

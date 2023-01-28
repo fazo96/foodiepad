@@ -4,7 +4,7 @@ import CheckBox from '@mui/icons-material/CheckBox'
 import ClearAll from '@mui/icons-material/ClearAll'
 import { graphql, useFragment, useMutation } from 'react-relay'
 import { ShoppingListItem_Item$key } from '../__generated__/ShoppingListItem_Item.graphql'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { ShoppingListItem_RemoveMutation } from '../__generated__/ShoppingListItem_RemoveMutation.graphql'
 import { ShoppingListItem_UpdateMutation } from '../__generated__/ShoppingListItem_UpdateMutation.graphql'
 
@@ -13,7 +13,7 @@ interface IShoppingListItemProps {
   connectionId: string
 }
 
-export default function ShoppingListItem ({ shoppingListItemFragmentRef, connectionId }: IShoppingListItemProps) {
+function ShoppingListItem ({ shoppingListItemFragmentRef, connectionId }: IShoppingListItemProps) {
   const item = useFragment(graphql`
     fragment ShoppingListItem_Item on ShoppingListItem {
       id
@@ -79,3 +79,5 @@ export default function ShoppingListItem ({ shoppingListItemFragmentRef, connect
     </ListItemSecondaryAction>
   </ListItem>
 }
+
+export default memo(ShoppingListItem)

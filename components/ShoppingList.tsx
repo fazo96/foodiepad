@@ -1,56 +1,37 @@
-import { graphql, useLazyLoadQuery } from 'react-relay'
-import { ShoppingList_Query } from '../__generated__/ShoppingList_Query.graphql'
-import {
-  List, ListItem
-} from '@mui/material'
-import ShoppingListItem from './ShoppingListItem'
-import ShoppingListAddItem from './ShoppingListAddItem'
-import { useEffect, useState } from 'react'
+import { ListItem, ListItemIcon, ListItemText } from '@mui/material'
+import { graphql, useFragment } from 'react-relay'
+import { memo, useCallback } from 'react'
+import { Assignment } from '@mui/icons-material'
+import { useRouter } from 'next/router'
+import { ShoppingList_List$key } from '../__generated__/ShoppingList_List.graphql'
 
-export default function ShoppingList () {
-  const [fetchKey, setFetchKey] = useState(0)
-
-  useEffect(() => {
-    const interval = setInterval(() => setFetchKey(fetchKey + 1), 2000)
-    return () => {
-      clearInterval(interval)
-    }
-  }, [fetchKey, setFetchKey])
-
-  const data = useLazyLoadQuery<ShoppingList_Query>(graphql`
-    query ShoppingList_Query {
-      shoppingList(first: 100) @connection(key: "main_shoppingList") {
-        __id
-        edges {
-          node {
-            id
-            ...ShoppingListItem_Item
-          }
-        }
-      }
-    }
-    `, {}, {
-    fetchPolicy: 'store-and-network',
-    fetchKey
-  })
-  const connectionId = data?.shoppingList?.__id
-
-  return <>
-    <List>
-      <ListItem>
-        <ShoppingListAddItem connectionId={connectionId} />
-      </ListItem>
-      {data?.shoppingList?.edges?.map(item => (
-        item === null || item.node === null
-          ? null
-          : (
-            <ShoppingListItem
-              key={item.node.id}
-              shoppingListItemFragmentRef={item.node}
-              connectionId={connectionId}
-            />
-          )
-      ))}
-    </List>
-  </>
+interface IShoppingListProps {
+  shoppingListFragmentRef: ShoppingList_List$key
 }
+
+function ShoppingList ({ shoppingListFragmentRef }: IShoppingListProps) {
+  const router = useRouter()
+  const list = useFragment(graphql`
+    fragment ShoppingList_List on ShoppingList {
+      id
+      title
+    }
+  `, shoppingListFragmentRef)
+
+  const openList = useCallback(() => {
+    if (list?.id) router.push(`/list/${list.id}`)
+  }, [list?.id, router])
+
+  if (!list) return null
+
+  return <ListItem button onClick={openList}>
+    <ListItemIcon>
+      <Assignment />
+    </ListItemIcon>
+    <ListItemText>
+      {list.title}
+    </ListItemText>
+  </ListItem>
+}
+
+export default memo(ShoppingList)

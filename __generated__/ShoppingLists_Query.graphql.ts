@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f2542196a084101223163af1372458cb>>
+ * @generated SignedSource<<d28d0d6ca341a754f72aaed68bc86e2d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,21 +10,21 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type ShoppingList_Query$variables = {};
-export type ShoppingList_Query$data = {
-  readonly shoppingList: {
+export type ShoppingLists_Query$variables = {};
+export type ShoppingLists_Query$data = {
+  readonly shoppingLists: {
     readonly __id: string;
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"ShoppingListItem_Item">;
+        readonly " $fragmentSpreads": FragmentRefs<"ShoppingList_List">;
       };
     } | null>;
   };
 };
-export type ShoppingList_Query = {
-  response: ShoppingList_Query$data;
-  variables: ShoppingList_Query$variables;
+export type ShoppingLists_Query = {
+  response: ShoppingLists_Query$data;
+  variables: ShoppingLists_Query$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -98,20 +98,20 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "ShoppingList_Query",
+    "name": "ShoppingLists_Query",
     "selections": [
       {
-        "alias": "shoppingList",
+        "alias": "shoppingLists",
         "args": null,
-        "concreteType": "QueryShoppingListConnection",
+        "concreteType": "QueryShoppingListsConnection",
         "kind": "LinkedField",
-        "name": "__main_shoppingList_connection",
+        "name": "__ShoppingLists_shoppingLists_connection",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "QueryShoppingListConnectionEdge",
+            "concreteType": "QueryShoppingListsConnectionEdge",
             "kind": "LinkedField",
             "name": "edges",
             "plural": true,
@@ -119,7 +119,7 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "ShoppingListItem",
+                "concreteType": "ShoppingList",
                 "kind": "LinkedField",
                 "name": "node",
                 "plural": false,
@@ -128,7 +128,7 @@ return {
                   {
                     "args": null,
                     "kind": "FragmentSpread",
-                    "name": "ShoppingListItem_Item"
+                    "name": "ShoppingList_List"
                   },
                   (v1/*: any*/)
                 ],
@@ -151,20 +151,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "ShoppingList_Query",
+    "name": "ShoppingLists_Query",
     "selections": [
       {
         "alias": null,
         "args": (v5/*: any*/),
-        "concreteType": "QueryShoppingListConnection",
+        "concreteType": "QueryShoppingListsConnection",
         "kind": "LinkedField",
-        "name": "shoppingList",
+        "name": "shoppingLists",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "QueryShoppingListConnectionEdge",
+            "concreteType": "QueryShoppingListsConnectionEdge",
             "kind": "LinkedField",
             "name": "edges",
             "plural": true,
@@ -172,7 +172,7 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "ShoppingListItem",
+                "concreteType": "ShoppingList",
                 "kind": "LinkedField",
                 "name": "node",
                 "plural": false,
@@ -183,13 +183,6 @@ return {
                     "args": null,
                     "kind": "ScalarField",
                     "name": "title",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "completed",
                     "storageKey": null
                   },
                   (v1/*: any*/)
@@ -203,21 +196,21 @@ return {
           (v3/*: any*/),
           (v4/*: any*/)
         ],
-        "storageKey": "shoppingList(first:100)"
+        "storageKey": "shoppingLists(first:100)"
       },
       {
         "alias": null,
         "args": (v5/*: any*/),
         "filters": null,
         "handle": "connection",
-        "key": "main_shoppingList",
+        "key": "ShoppingLists_shoppingLists",
         "kind": "LinkedHandle",
-        "name": "shoppingList"
+        "name": "shoppingLists"
       }
     ]
   },
   "params": {
-    "cacheID": "d3dc3d3f8b7a2baa315f0f7864ec16b9",
+    "cacheID": "3c86d6d413d1842a6c7f560dc90a629f",
     "id": null,
     "metadata": {
       "connection": [
@@ -226,18 +219,18 @@ return {
           "cursor": null,
           "direction": "forward",
           "path": [
-            "shoppingList"
+            "shoppingLists"
           ]
         }
       ]
     },
-    "name": "ShoppingList_Query",
+    "name": "ShoppingLists_Query",
     "operationKind": "query",
-    "text": "query ShoppingList_Query {\n  shoppingList(first: 100) {\n    edges {\n      node {\n        id\n        ...ShoppingListItem_Item\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ShoppingListItem_Item on ShoppingListItem {\n  id\n  title\n  completed\n}\n"
+    "text": "query ShoppingLists_Query {\n  shoppingLists(first: 100) {\n    edges {\n      node {\n        id\n        ...ShoppingList_List\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ShoppingList_List on ShoppingList {\n  id\n  title\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b5bc3b5c6fce1e88a52afce44196c7ce";
+(node as any).hash = "791e9fa810766f5fa69e711e501d76c1";
 
 export default node;

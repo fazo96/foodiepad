@@ -1,28 +1,27 @@
 import { useForm } from 'react-hook-form'
 import { graphql, useMutation } from 'react-relay'
-import { ShoppingListAddItem_Mutation } from '../__generated__/ShoppingListAddItem_Mutation.graphql'
 import { memo, useCallback } from 'react'
 import { IconButton, TextField } from '@mui/material'
-import { Send } from '@mui/icons-material'
+import {CheckCircle, List as ListIcon, PlusOne, Send} from '@mui/icons-material'
+import { CreateShoppingList_Mutation } from '../__generated__/CreateShoppingList_Mutation.graphql'
 
-interface IShoppingListAddItemProps {
+interface ICreateShoppingListProps {
   connectionId?: string
-  shoppingListId: string
 }
 
 interface FormValues {
   title: string
 }
 
-function ShoppingListAddItem ({ connectionId, shoppingListId }: IShoppingListAddItemProps) {
+function CreateShoppingList ({ connectionId }: ICreateShoppingListProps) {
   const { handleSubmit, register, reset } = useForm<FormValues>()
 
-  const [commitAdd] = useMutation<ShoppingListAddItem_Mutation>(graphql`
-    mutation ShoppingListAddItem_Mutation($input: CreateShoppingListItemInput!, $connectionIds: [ID!]!) {
-      createShoppingListItem(input: $input) {
-        shoppingListItem @prependNode(connections: $connectionIds, edgeTypeName: "QueryShoppingListItemsConnectionEdge") {
+  const [commitAdd] = useMutation<CreateShoppingList_Mutation>(graphql`
+    mutation CreateShoppingList_Mutation($input: CreateShoppingListInput!, $connectionIds: [ID!]!) {
+      createShoppingList(input: $input) {
+        shoppingList @prependNode(connections: $connectionIds, edgeTypeName: "QueryShoppingListConnectionEdge") {
           id
-          ...ShoppingListItem_Item
+          ...ShoppingList_List
         }
       }
     }
@@ -32,14 +31,13 @@ function ShoppingListAddItem ({ connectionId, shoppingListId }: IShoppingListAdd
     commitAdd({
       variables: {
         input: {
-          title: data.title,
-          shoppingList: shoppingListId
+          title: data.title
         },
         connectionIds: connectionId ? [connectionId] : []
       }
     })
     reset()
-  }, [commitAdd, connectionId, reset, shoppingListId])
+  }, [commitAdd, connectionId, reset])
 
   return (
     <form onSubmit={handleSubmit(add)} style={{ width: '100%' }}>
@@ -48,7 +46,7 @@ function ShoppingListAddItem ({ connectionId, shoppingListId }: IShoppingListAdd
           required: true
         })}
         fullWidth
-        placeholder="Add something..."
+        placeholder="Create a list..."
         InputProps={{
           endAdornment: <IconButton type="submit">
             <Send />
@@ -59,4 +57,4 @@ function ShoppingListAddItem ({ connectionId, shoppingListId }: IShoppingListAdd
   )
 }
 
-export default memo(ShoppingListAddItem)
+export default memo(CreateShoppingList)
