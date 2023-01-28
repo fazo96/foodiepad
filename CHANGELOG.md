@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/fazo96/foodiepad/compare/v0.1.2...v0.1.3) (2023-01-28)
+
+
+### Features
+
+* support multiple lists ([10947a6](https://github.com/fazo96/foodiepad/commit/10947a6f8931342c8fe1371b12f3e5d1f7f39f61))
+* upgraded packages ([fe936f2](https://github.com/fazo96/foodiepad/commit/fe936f2f2bc43a41a9e5425c4ea8c20de48d4697))
+
 ### [0.1.2](https://github.com/fazo96/foodiepad/compare/v0.1.1...v0.1.2) (2022-08-10)
 
 
