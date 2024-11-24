@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Container, TextField, Button, List, ListItem, ListItemText, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Container, Button, List, ListItem, ListItemText, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogActions, ListItemIcon, Chip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AddIcon from '@mui/icons-material/Add';
 import { supabase, ShoppingList } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { redirect, useRouter } from 'next/navigation';
 import { forceSignIn } from '@/env';
+import AutoFocusTextField from '@/components/AutoFocusTextField';
+import { Assignment } from '@mui/icons-material';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 export default function Home() {
   const [lists, setLists] = useState<ShoppingList[]>([]);
@@ -137,8 +141,11 @@ export default function Home() {
       <Box sx={{ my: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Typography variant="h4" component="h1">
-            Foodiepad
+            foodiepad <Chip label="Beta" color="primary" />
           </Typography>
+          <IconButton href="https://github.com/fazo96/foodiepad" title="GitHub">
+            <GitHubIcon />
+          </IconButton>
           {user && (
             <IconButton onClick={signOut} title="Sign out">
               <LogoutIcon />
@@ -147,14 +154,19 @@ export default function Home() {
         </Box>
 
         <Box component="form" onSubmit={addList} sx={{ mb: 4, display: 'flex', gap: 1 }}>
-          <TextField
+          <AutoFocusTextField
             fullWidth
             value={newListName}
             onChange={(e) => setNewListName(e.target.value)}
             placeholder="Add new list"
             size="small"
           />
-          <Button type="submit" variant="contained" disabled={!newListName.trim()}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={!newListName.trim()}
+            endIcon={<AddIcon />}
+          >
             Add
           </Button>
         </Box>
@@ -190,6 +202,7 @@ export default function Home() {
                 </Box>
               }
             >
+              <ListItemIcon><Assignment /></ListItemIcon>
               <ListItemText primary={list.name} />
             </ListItem>
           ))}
@@ -202,7 +215,7 @@ export default function Home() {
       }}>
         <DialogTitle>Rename List</DialogTitle>
         <DialogContent>
-          <TextField
+          <AutoFocusTextField
             autoFocus
             margin="dense"
             fullWidth

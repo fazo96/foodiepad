@@ -11,7 +11,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Foodiepad",
+  title: "foodiepad",
   description: "A simple shopping list app",
 };
 

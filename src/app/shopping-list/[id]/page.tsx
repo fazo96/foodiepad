@@ -1,14 +1,16 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { Box, Container, TextField, Button, List, ListItem, ListItemText, IconButton, Typography, Checkbox } from '@mui/material';
+import { Box, Container, Button, List, ListItem, ListItemText, IconButton, Typography, Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { supabase, ShoppingItem, ShoppingList as ShoppingListType } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
 import { redirect } from 'next/navigation';
 import { forceSignIn } from '@/env';
-
+import AutoFocusTextField from '@/components/AutoFocusTextField';
+import AddIcon from '@mui/icons-material/Add';
+import { Assignment } from '@mui/icons-material';
 export default function ShoppingList({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [items, setItems] = useState<ShoppingItem[]>([]);
@@ -160,6 +162,7 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
       <Box sx={{ my: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Typography variant="h4" component="h1">
+            <Assignment style={{ marginRight: 8 }} />
             {list?.name || 'Shopping List'}
           </Typography>
           {user && (
@@ -170,14 +173,19 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
         </Box>
 
         <Box component="form" onSubmit={addItem} sx={{ mb: 4, display: 'flex', gap: 1 }}>
-          <TextField
+          <AutoFocusTextField
             fullWidth
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
             placeholder="Add new item"
             size="small"
           />
-          <Button type="submit" variant="contained" disabled={!newItem.trim()}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={!newItem.trim()}
+            endIcon={<AddIcon />}
+          >
             Add
           </Button>
         </Box>
