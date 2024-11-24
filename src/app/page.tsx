@@ -1,18 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Container, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Typography, Checkbox } from '@mui/material';
+import { Box, Container, TextField, Button, List, ListItem, ListItemText, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { supabase, ShoppingItem } from '@/lib/supabase';
+import { supabase, ShoppingList } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { forceSignIn } from '@/env';
 
 export default function Home() {
-  const [items, setItems] = useState<ShoppingItem[]>([]);
-  const [newItem, setNewItem] = useState('');
+  const [lists, setLists] = useState<ShoppingList[]>([]);
+  const [newListName, setNewListName] = useState('');
+  const [editingList, setEditingList] = useState<ShoppingList | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
+  const router = useRouter();
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -24,21 +28,22 @@ export default function Home() {
   useEffect(() => {
     if (user || !forceSignIn) {
       // Initial fetch
-      fetchItems();
+      fetchLists();
 
       // Set up realtime subscription
       const channel = supabase
-        .channel('shopping_items_changes')
+        .channel('shopping_lists_changes')
         .on(
           'postgres_changes',
           {
             event: '*',
             schema: 'public',
-            table: 'shopping_items'
+            table: 'shopping_lists',
+            filter: user ? `user_id=eq.${user.id}` : undefined
           },
           (payload) => {
             console.log('Change received!', payload);
-            fetchItems();
+            fetchLists();
           }
         )
         .subscribe();
@@ -50,54 +55,71 @@ export default function Home() {
     }
   }, [user]);
 
-  const fetchItems = async () => {
+  const fetchLists = async () => {
     const { data, error } = await supabase
-      .from('shopping_items')
+      .from('shopping_lists')
       .select('*')
-      .order('item_name', { ascending: true });
+      .order('name', { ascending: true });
 
     if (error) {
-      console.error('Error fetching items:', error);
+      console.error('Error fetching lists:', error);
     } else {
-      setItems(data || []);
+      setLists(data || []);
     }
   };
 
-  const addItem = async (e: React.FormEvent) => {
+  const addList = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newItem.trim()) return;
+    if (!newListName.trim()) return;
 
     const { error } = await supabase
-      .from('shopping_items')
-      .insert([{ item_name: newItem.trim(), is_completed: false }]);
+      .from('shopping_lists')
+      .insert([{ 
+        name: newListName.trim(),
+        user_id: user?.id
+      }]);
 
     if (error) {
-      console.error('Error adding item:', error);
+      console.error('Error adding list:', error);
     } else {
-      setNewItem('');
+      setNewListName('');
+      fetchLists();
     }
   };
 
-  const toggleItem = async (id: number, isCompleted: boolean) => {
+  const updateList = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingList || !editingList.name.trim()) return;
+
     const { error } = await supabase
-      .from('shopping_items')
-      .update({ is_completed: !isCompleted })
-      .eq('id', id);
+      .from('shopping_lists')
+      .update({ name: editingList.name.trim() })
+      .eq('id', editingList.id);
 
     if (error) {
-      console.error('Error updating item:', error);
+      console.error('Error updating list:', error);
+    } else {
+      setEditingList(null);
+      setDialogOpen(false);
+      fetchLists();
     }
   };
 
-  const deleteItem = async (id: number) => {
+  const deleteList = async (id: number) => {
     const { error } = await supabase
-      .from('shopping_items')
+      .from('shopping_lists')
       .delete()
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting item:', error);
+      console.error('Error deleting list:', error);
+    } else {
+      fetchLists();
     }
+  };
+
+  const openList = (id: number) => {
+    router.push(`/shopping-list/${id}`);
   };
 
   if (loading) {
@@ -124,44 +146,79 @@ export default function Home() {
           )}
         </Box>
 
-        <Box component="form" onSubmit={addItem} sx={{ mb: 4, display: 'flex', gap: 1 }}>
+        <Box component="form" onSubmit={addList} sx={{ mb: 4, display: 'flex', gap: 1 }}>
           <TextField
             fullWidth
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-            placeholder="Add new item"
+            value={newListName}
+            onChange={(e) => setNewListName(e.target.value)}
+            placeholder="Add new list"
             size="small"
           />
-          <Button type="submit" variant="contained" disabled={!newItem.trim()}>
+          <Button type="submit" variant="contained" disabled={!newListName.trim()}>
             Add
           </Button>
         </Box>
 
         <List>
-          {items.map((item) => (
+          {lists.map((list) => (
             <ListItem
-              key={item.id}
+              key={list.id}
+              onClick={() => openList(list.id)}
+              sx={{ cursor: 'pointer' }}
               secondaryAction={
-                <IconButton edge="end" onClick={() => deleteItem(item.id)}>
-                  <DeleteIcon />
-                </IconButton>
+                <Box>
+                  <IconButton 
+                    edge="end" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingList(list);
+                      setDialogOpen(true);
+                    }}
+                    sx={{ mr: 1 }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton 
+                    edge="end" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteList(list.id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               }
             >
-              <Checkbox
-                edge="start"
-                checked={item.is_completed}
-                onChange={() => toggleItem(item.id, item.is_completed)}
-              />
-              <ListItemText
-                primary={item.item_name}
-                sx={{
-                  textDecoration: item.is_completed ? 'line-through' : 'none',
-                }}
-              />
+              <ListItemText primary={list.name} />
             </ListItem>
           ))}
         </List>
       </Box>
+
+      <Dialog open={dialogOpen} onClose={() => {
+        setDialogOpen(false);
+        setEditingList(null);
+      }}>
+        <DialogTitle>Rename List</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            fullWidth
+            value={editingList?.name || ''}
+            onChange={(e) => setEditingList(prev => prev ? { ...prev, name: e.target.value } : null)}
+            placeholder="List name"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setDialogOpen(false);
+            setEditingList(null);
+          }}>Cancel</Button>
+          <Button onClick={updateList} variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
