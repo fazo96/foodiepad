@@ -3,6 +3,7 @@ import { Roboto } from 'next/font/google';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/theme";
+import { AuthProvider } from "@/lib/auth-context";
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -10,7 +11,6 @@ const roboto = Roboto({
   display: 'swap',
   variable: '--font-roboto',
 });
-
 
 export const metadata: Metadata = {
   title: "Foodiepad",
@@ -27,7 +27,9 @@ export default function RootLayout({
       <body className={roboto.variable}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
-            {children}
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

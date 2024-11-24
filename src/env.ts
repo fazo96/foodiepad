@@ -1,0 +1,1 @@
+export const forceSignIn = process.env.FORCE_SIGN_IN === 'true';

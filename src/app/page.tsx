@@ -3,44 +3,58 @@
 import { useState, useEffect } from 'react';
 import { Box, Container, TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Typography, Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { supabase, ShoppingItem } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
+import { redirect } from 'next/navigation';
+import { forceSignIn } from '@/env';
 
 export default function Home() {
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [newItem, setNewItem] = useState('');
+  const { user, loading, signOut } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user && forceSignIn) {
+      redirect('/login');
+    }
+  }, [user, loading]);
 
   useEffect(() => {
-    // Initial fetch
-    fetchItems();
+    if (user || !forceSignIn) {
+      // Initial fetch
+      fetchItems();
 
-    // Set up realtime subscription
-    const channel = supabase
-      .channel('shopping_items_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'shopping_items'
-        },
-        (payload) => {
-          console.log('Change received!', payload);
-          fetchItems();
-        }
-      )
-      .subscribe();
+      // Set up realtime subscription
+      const channel = supabase
+        .channel('shopping_items_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'shopping_items'
+          },
+          (payload) => {
+            console.log('Change received!', payload);
+            fetchItems();
+          }
+        )
+        .subscribe();
 
-    // Cleanup subscription
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      // Cleanup subscription
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user]);
 
   const fetchItems = async () => {
     const { data, error } = await supabase
       .from('shopping_items')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('item_name', { ascending: true });
 
     if (error) {
       console.error('Error fetching items:', error);
@@ -86,13 +100,30 @@ export default function Home() {
     }
   };
 
+  if (loading) {
+    return (
+      <Container maxWidth="sm">
+        <Box sx={{ my: 4, textAlign: 'center' }}>
+          <Typography>Loading...</Typography>
+        </Box>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Foodiepad
-        </Typography>
-        
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Typography variant="h4" component="h1">
+            Foodiepad
+          </Typography>
+          {user && (
+            <IconButton onClick={signOut} title="Sign out">
+              <LogoutIcon />
+            </IconButton>
+          )}
+        </Box>
+
         <Box component="form" onSubmit={addItem} sx={{ mb: 4, display: 'flex', gap: 1 }}>
           <TextField
             fullWidth
