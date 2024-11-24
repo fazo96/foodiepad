@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Container, Button, List, ListItem, ListItemText, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogActions, ListItemIcon, Chip } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { Box, Container, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Chip, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AddIcon from '@mui/icons-material/Add';
 import { supabase, ShoppingList } from '@/lib/supabase';
@@ -11,8 +9,8 @@ import { useAuth } from '@/lib/auth-context';
 import { redirect, useRouter } from 'next/navigation';
 import { forceSignIn } from '@/env';
 import AutoFocusTextField from '@/components/AutoFocusTextField';
-import { Assignment } from '@mui/icons-material';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import ShoppingListCard from '@/components/ShoppingListCard';
 
 export default function Home() {
   const [lists, setLists] = useState<ShoppingList[]>([]);
@@ -171,42 +169,20 @@ export default function Home() {
           </Button>
         </Box>
 
-        <List>
+        <Box sx={{ display: 'grid', gap: 2 }}>
           {lists.map((list) => (
-            <ListItem
+            <ShoppingListCard
               key={list.id}
-              onClick={() => openList(list.id)}
-              sx={{ cursor: 'pointer' }}
-              secondaryAction={
-                <Box>
-                  <IconButton 
-                    edge="end" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingList(list);
-                      setDialogOpen(true);
-                    }}
-                    sx={{ mr: 1 }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton 
-                    edge="end" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteList(list.id);
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              }
-            >
-              <ListItemIcon><Assignment /></ListItemIcon>
-              <ListItemText primary={list.name} />
-            </ListItem>
+              list={list}
+              onEdit={(list) => {
+                setEditingList(list);
+                setDialogOpen(true);
+              }}
+              onDelete={deleteList}
+              onClick={openList}
+            />
           ))}
-        </List>
+        </Box>
       </Box>
 
       <Dialog open={dialogOpen} onClose={() => {
