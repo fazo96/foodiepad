@@ -140,6 +140,8 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
 
     if (error) {
       console.error('Error deleting item:', error);
+    } else {
+      fetchItems();
     }
   };
 
