@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { Box, Container, Button, List, ListItem, ListItemText, IconButton, Typography, Checkbox } from '@mui/material';
+import { Box, Container, Button, List, ListItem, ListItemText, IconButton, Typography, Checkbox, Skeleton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { supabase, ShoppingItem, ShoppingList as ShoppingListType } from '@/lib/supabase';
@@ -16,21 +16,26 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [list, setList] = useState<ShoppingListType | null>(null);
   const [newItem, setNewItem] = useState('');
-  const { user, loading, signOut } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading, signOut } = useAuth();
   const listId = parseInt(id);
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!loading && !user && forceSignIn) {
+    if (!authLoading && !user && forceSignIn) {
       redirect('/login');
     }
-  }, [user, loading]);
+  }, [user, authLoading]);
 
   useEffect(() => {
     if (user || !forceSignIn) {
       // Initial fetch
-      fetchList();
-      fetchItems();
+      const fetchData = async () => {
+        setLoading(true);
+        await Promise.all([fetchList(), fetchItems()]);
+        setLoading(false);
+      };
+      fetchData();
 
       // Set up realtime subscription for items
       const itemsChannel = supabase
@@ -147,7 +152,7 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
     }
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <Container maxWidth="sm">
         <Box sx={{ my: 4, textAlign: 'center' }}>
@@ -161,10 +166,17 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography variant="h4" component="h1">
-            <Assignment style={{ marginRight: 8 }} />
-            {list?.name || 'Shopping List'}
-          </Typography>
+          {loading ? (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Assignment style={{ marginRight: 8 }} />
+              <Skeleton variant="text" width={200} height={40} />
+            </Box>
+          ) : (
+            <Typography variant="h4" component="h1">
+              <Assignment style={{ marginRight: 8 }} />
+              {list?.name || 'Shopping List'}
+            </Typography>
+          )}
           {user && (
             <IconButton onClick={signOut} title="Sign out">
               <LogoutIcon />
@@ -191,28 +203,39 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
         </Box>
 
         <List>
-          {items.map((item) => (
-            <ListItem
-              key={item.id}
-              secondaryAction={
-                <IconButton edge="end" onClick={() => deleteItem(item.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              }
-            >
-              <Checkbox
-                edge="start"
-                checked={item.is_completed}
-                onChange={() => toggleItem(item.id, item.is_completed)}
-              />
-              <ListItemText
-                primary={item.item_name}
-                sx={{
-                  textDecoration: item.is_completed ? 'line-through' : 'none',
-                }}
-              />
-            </ListItem>
-          ))}
+          {loading ? (
+            // Show 5 skeleton items while loading
+            [...Array(5)].map((_, index) => (
+              <ListItem key={index}>
+                <Skeleton variant="circular" width={40} height={40} sx={{ mr: 1 }} />
+                <Skeleton variant="text" width="80%" height={40} />
+                <Skeleton variant="circular" width={40} height={40} sx={{ ml: 1 }} />
+              </ListItem>
+            ))
+          ) : (
+            items.map((item) => (
+              <ListItem
+                key={item.id}
+                secondaryAction={
+                  <IconButton edge="end" onClick={() => deleteItem(item.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                }
+              >
+                <Checkbox
+                  edge="start"
+                  checked={item.is_completed}
+                  onChange={() => toggleItem(item.id, item.is_completed)}
+                />
+                <ListItemText
+                  primary={item.item_name}
+                  sx={{
+                    textDecoration: item.is_completed ? 'line-through' : 'none',
+                  }}
+                />
+              </ListItem>
+            ))
+          )}
         </List>
       </Box>
     </Container>

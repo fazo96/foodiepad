@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, Box, Typography, IconButton, Chip } from '@mui/material';
+import { Card, CardContent, Box, Typography, IconButton, Chip, Skeleton } from '@mui/material';
 import { Assignment, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { supabase, ShoppingList } from '@/lib/supabase';
 
@@ -16,6 +16,7 @@ interface ShoppingListCardProps {
 
 export default function ShoppingListCard({ list, onEdit, onDelete, onClick }: ShoppingListCardProps) {
   const [items, setItems] = useState<ShoppingListItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchItems();
@@ -43,6 +44,7 @@ export default function ShoppingListCard({ list, onEdit, onDelete, onClick }: Sh
   }, [list.id]);
 
   const fetchItems = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from('shopping_items')
       .select('item_name')
@@ -54,6 +56,7 @@ export default function ShoppingListCard({ list, onEdit, onDelete, onClick }: Sh
     } else {
       setItems(data || []);
     }
+    setLoading(false);
   };
 
   return (
@@ -66,12 +69,16 @@ export default function ShoppingListCard({ list, onEdit, onDelete, onClick }: Sh
           <Typography variant="h6" component="div" sx={{ display: 'flex', alignItems: 'center' }}>
             <Assignment sx={{ mr: 1 }} />
             {list.name}
-            <Chip
-              label={items.length ? `${items.length} items` : 'Empty'}
-              size="small"
-              color={items.length ? 'primary' : 'default'}
-              sx={{ ml: 1 }}
-            />
+            {loading ? (
+              <Skeleton width={60} height={24} sx={{ ml: 1 }} />
+            ) : (
+              <Chip
+                label={items.length ? `${items.length} items` : 'Empty'}
+                size="small"
+                color={items.length ? 'primary' : 'default'}
+                sx={{ ml: 1 }}
+              />
+            )}
           </Typography>
           <Box>
             <IconButton
@@ -94,14 +101,18 @@ export default function ShoppingListCard({ list, onEdit, onDelete, onClick }: Sh
             </IconButton>
           </Box>
         </Box>
-        <Typography variant="body2" color="text.secondary">
-          {items.length ? (
-            items.slice(0, 3).map(item => item.item_name).join(', ') + 
-            (items.length > 3 ? ` and ${items.length - 3} more...` : '')
-          ) : (
-            'No items yet'
-          )}
-        </Typography>
+        {loading ? (
+          <Skeleton width="80%" height={20} />
+        ) : (
+          <Typography variant="body2" color="text.secondary">
+            {items.length ? (
+              items.slice(0, 3).map(item => item.item_name).join(', ') + 
+              (items.length > 3 ? ` and ${items.length - 3} more...` : '')
+            ) : (
+              'No items yet'
+            )}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
