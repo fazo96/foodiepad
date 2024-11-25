@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Container, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Chip, IconButton } from '@mui/material';
+import { Box, Container, Button, Typography, Chip, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AddIcon from '@mui/icons-material/Add';
 import { supabase, ShoppingList } from '@/lib/supabase';
@@ -11,6 +11,7 @@ import { forceSignIn } from '@/env';
 import AutoFocusTextField from '@/components/AutoFocusTextField';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ShoppingListCard from '@/components/ShoppingListCard';
+import EditListDialog from '@/components/EditListDialog';
 
 export default function Home() {
   const [lists, setLists] = useState<ShoppingList[]>([]);
@@ -89,14 +90,44 @@ export default function Home() {
     }
   };
 
-  const updateList = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingList || !editingList.name.trim()) return;
+  const updateList = async (updatedList: ShoppingList, sharedWithUserId: string | null) => {
+    if (!updatedList || !updatedList.name.trim()) return;
+
+    const updates: any = { name: updatedList.name.trim() };
+    
+    if (sharedWithUserId) {
+      // First, verify if the user exists
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', sharedWithUserId)
+        .single();
+
+      if (userError || !userData) {
+        alert('User not found. Please check the user ID.');
+        return;
+      }
+
+      // Create a sharing record
+      const { error: sharingError } = await supabase
+        .from('shares')
+        .insert([{
+          list_id: updatedList.id,
+          from_user_id: user?.id,
+          to_user_id: sharedWithUserId
+        }]);
+
+      if (sharingError) {
+        console.error('Error sharing list:', sharingError);
+        alert('Failed to share the list. The user might already have access to this list.');
+        return;
+      }
+    }
 
     const { error } = await supabase
       .from('shopping_lists')
-      .update({ name: editingList.name.trim() })
-      .eq('id', editingList.id);
+      .update(updates)
+      .eq('id', updatedList.id);
 
     if (error) {
       console.error('Error updating list:', error);
@@ -187,29 +218,17 @@ export default function Home() {
         </Box>
       </Box>
 
-      <Dialog open={dialogOpen} onClose={() => {
-        setDialogOpen(false);
-        setEditingList(null);
-      }}>
-        <DialogTitle>Rename List</DialogTitle>
-        <DialogContent>
-          <AutoFocusTextField
-            autoFocus
-            margin="dense"
-            fullWidth
-            value={editingList?.name || ''}
-            onChange={(e) => setEditingList(prev => prev ? { ...prev, name: e.target.value } : null)}
-            placeholder="List name"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => {
+      {dialogOpen && (
+        <EditListDialog
+          open={dialogOpen}
+          list={editingList}
+          onClose={() => {
             setDialogOpen(false);
             setEditingList(null);
-          }}>Cancel</Button>
-          <Button onClick={updateList} variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+          }}
+          onSave={updateList}
+        />
+      )}
     </Container>
   );
 }

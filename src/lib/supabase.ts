@@ -18,4 +18,19 @@ export type ShoppingItem = {
   item_name: string;
   is_completed: boolean;
   list_id: number;
+  user_id: string;
 } 
+
+export type Profile = {
+  id: string;
+  user_id: string;
+  name: string;
+}
+
+export type Share = {
+  id: number;
+  created_at: string;
+  list_id: number;
+  from_user_id: string;
+  to_user_id: string;
+}

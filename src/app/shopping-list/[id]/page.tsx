@@ -18,7 +18,7 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
   const [newItem, setNewItem] = useState('');
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
-  const listId = parseInt(id);
+  const listId = id;
 
   // Redirect to login if not authenticated
   useEffect(() => {
