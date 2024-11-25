@@ -17,7 +17,7 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
   const [list, setList] = useState<ShoppingListType | null>(null);
   const [newItem, setNewItem] = useState('');
   const [loading, setLoading] = useState(true);
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const listId = parseInt(id);
 
   // Redirect to login if not authenticated
@@ -176,11 +176,6 @@ export default function ShoppingList({ params }: { params: Promise<{ id: string 
               <Assignment style={{ marginRight: 8 }} />
               {list?.name || 'Shopping List'}
             </Typography>
-          )}
-          {user && (
-            <IconButton onClick={signOut} title="Sign out">
-              <LogoutIcon />
-            </IconButton>
           )}
         </Box>
 

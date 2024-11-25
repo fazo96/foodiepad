@@ -141,14 +141,16 @@ export default function Home() {
           <Typography variant="h4" component="h1">
             foodiepad <Chip label="Beta" color="primary" />
           </Typography>
-          <IconButton href="https://github.com/fazo96/foodiepad" title="GitHub">
-            <GitHubIcon />
-          </IconButton>
-          {user && (
-            <IconButton onClick={signOut} title="Sign out">
-              <LogoutIcon />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <IconButton href="https://github.com/fazo96/foodiepad" title="GitHub">
+              <GitHubIcon />
             </IconButton>
-          )}
+            {user && (
+              <IconButton onClick={signOut} title="Sign out">
+                <LogoutIcon />
+              </IconButton>
+            )}
+          </Box>
         </Box>
 
         <Box component="form" onSubmit={addList} sx={{ mb: 4, display: 'flex', gap: 1 }}>
